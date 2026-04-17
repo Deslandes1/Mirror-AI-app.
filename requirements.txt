@@ -1,8 +1,7 @@
 streamlit
-opencv-python-headless
-pillow
 edge-tts
 nest-asyncio
 openai
 groq
 google-generativeai
+Pillow
