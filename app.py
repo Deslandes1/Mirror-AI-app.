@@ -112,11 +112,13 @@ with st.sidebar:
 if "mirror_response" not in st.session_state:
     st.session_state.mirror_response = ""
 
-# Mirror camera – using st.camera_input (works in cloud)
+# Camera toggle
 st.markdown("### 🎥 Your Reflection")
-camera_photo = st.camera_input("", label_visibility="collapsed")
-# The camera input automatically shows the live feed; no need to capture a photo.
-# We just display the mirrored feed via CSS.
+show_camera = st.checkbox("Show Camera", value=True)
+if show_camera:
+    camera_photo = st.camera_input("", label_visibility="collapsed")
+else:
+    st.info("Camera is off. Check 'Show Camera' to see your reflection.")
 
 # Audio function (unchanged)
 def speak(text):
