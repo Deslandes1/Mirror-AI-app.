@@ -9,12 +9,55 @@ import subprocess
 
 st.set_page_config(page_title="Mirror AI – Your Talking Reflection", layout="wide")
 
+# Custom CSS – force all text to white
 st.markdown("""
 <style>
-    .stApp { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); }
-    h1, h2, h3 { color: #48dbfb; }
-    .stButton button { background-color: #ff6b35; color: white; border-radius: 30px; font-weight: bold; }
-    .stAlert { background-color: #1e2130; color: white; }
+    .stApp {
+        background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+        color: white !important;
+    }
+    /* All text elements */
+    .stApp, .stApp p, .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6,
+    .stApp label, .stApp .stMarkdown, .stApp .stText, .stApp .stCaption, .stApp .stInfo,
+    .stApp .stSuccess, .stApp .stWarning, .stApp .stError, .stApp .stRadio label,
+    .stApp .stSelectbox label, .stApp .stSlider label, .stApp .stFileUploader label,
+    .stApp .stTextArea label, .stApp .stButton button, .stApp .stAlert, .stApp .stException,
+    .stApp .stCodeBlock, .stApp .stDataFrame, .stApp .stTable, .stApp .stTabs [role="tab"],
+    .stApp .stTabs [role="tablist"] button, .stApp .stExpander, .stApp .stProgress > div,
+    .stApp .stMetric label, .stApp .stMetric value, div, p, span, pre, code,
+    .element-container, .stText p, .stText div, .stText span, .stText code {
+        color: white !important;
+    }
+    /* Input fields – keep text white but background semi-transparent */
+    .stTextInput input, .stTextArea textarea, .stSelectbox div[data-baseweb="select"] {
+        color: white !important;
+        background-color: rgba(255,255,255,0.1) !important;
+    }
+    /* Buttons */
+    .stButton button {
+        background-color: #ff6b35 !important;
+        color: white !important;
+        border-radius: 30px;
+        font-weight: bold;
+    }
+    .stButton button:hover {
+        background-color: #feca57 !important;
+        color: black !important;
+    }
+    /* Sidebar */
+    section[data-testid="stSidebar"] {
+        background: linear-gradient(135deg, #1a0b2e, #2d1b4e);
+    }
+    section[data-testid="stSidebar"] .stMarkdown,
+    section[data-testid="stSidebar"] .stText,
+    section[data-testid="stSidebar"] label {
+        color: white !important;
+    }
+    /* Error/Warning/Success boxes */
+    .stAlert {
+        background-color: rgba(0,0,0,0.6) !important;
+        color: white !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
