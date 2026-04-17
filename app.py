@@ -1,8 +1,6 @@
 import streamlit as st
 import cv2
 import numpy as np
-from PIL import Image
-import speech_recognition as sr
 import asyncio
 import tempfile
 import base64
@@ -23,7 +21,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 st.title("🪞 Mirror AI – Your Talking Reflection")
-st.markdown("Look into the camera, speak to your reflection, and it will answer you.")
+st.markdown("Look into the camera, type your question, and your reflection will answer with voice.")
 
 # Sidebar for API key and settings
 with st.sidebar:
@@ -57,8 +55,6 @@ with st.sidebar:
 # Initialize session state
 if "mirror_response" not in st.session_state:
     st.session_state.mirror_response = ""
-if "listening" not in st.session_state:
-    st.session_state.listening = False
 
 # Webcam feed
 st.markdown("### 🎥 Your Reflection")
@@ -83,27 +79,6 @@ def speak(text):
         finally:
             if os.path.exists(tmp.name):
                 os.unlink(tmp.name)
-
-# Speech recognition
-def listen_for_question():
-    recognizer = sr.Recognizer()
-    with sr.Microphone() as source:
-        st.info("🎤 Listening... Speak your question to the mirror.")
-        try:
-            recognizer.adjust_for_ambient_noise(source, duration=0.5)
-            audio = recognizer.listen(source, timeout=10, phrase_time_limit=15)
-            st.success("✅ Captured! Processing...")
-            question = recognizer.recognize_google(audio)
-            return question
-        except sr.WaitTimeoutError:
-            st.warning("No speech detected. Please try again.")
-            return None
-        except sr.UnknownValueError:
-            st.warning("Could not understand. Please speak clearly.")
-            return None
-        except Exception as e:
-            st.error(f"Error: {e}")
-            return None
 
 # LLM answer generation
 def get_llm_answer(question, provider, key, model_name):
@@ -164,37 +139,22 @@ if camera_running:
                 break
         cap.release()
 
-# Question input methods
+# Question input (text only)
 st.markdown("---")
-st.markdown("### 🎤 Ask the Mirror")
+st.markdown("### 💬 Ask the Mirror")
 
-col1, col2 = st.columns(2)
-with col1:
-    if st.button("🎙️ Speak your question", use_container_width=True):
-        question = listen_for_question()
-        if question:
-            st.session_state.last_question = question
-            st.info(f"🧑 You asked: {question}")
-            with st.spinner("Mirror is thinking..."):
-                answer = get_llm_answer(question, llm_provider, api_key, model)
-                if answer:
-                    st.session_state.mirror_response = answer
-                    st.success(f"🪞 Mirror says: {answer}")
-                    speak(answer)
-
-with col2:
-    text_question = st.text_input("Or type your question here:")
-    if st.button("Ask (typed)", use_container_width=True) and text_question:
-        with st.spinner("Mirror is thinking..."):
-            answer = get_llm_answer(text_question, llm_provider, api_key, model)
-            if answer:
-                st.session_state.mirror_response = answer
-                st.success(f"🪞 Mirror says: {answer}")
-                speak(answer)
+text_question = st.text_input("Type your question here:", placeholder="e.g., What is the meaning of life?")
+if st.button("Ask the Mirror", use_container_width=True) and text_question:
+    with st.spinner("Mirror is thinking..."):
+        answer = get_llm_answer(text_question, llm_provider, api_key, model)
+        if answer:
+            st.session_state.mirror_response = answer
+            st.success(f"🪞 Mirror says: {answer}")
+            speak(answer)
 
 if st.session_state.mirror_response:
     st.markdown("---")
     st.markdown(f"**Last mirror response:** {st.session_state.mirror_response}")
 
 st.markdown("---")
-st.caption("🪞 Look at yourself, speak, and your reflection will answer. Powered by AI and edge-tts.")
+st.caption("🪞 Look at yourself, type a question, and your reflection will answer with voice. Powered by AI and edge-tts.")
