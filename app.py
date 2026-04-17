@@ -7,10 +7,8 @@ import base64
 import os
 import subprocess
 
-# Page config
 st.set_page_config(page_title="Mirror AI – Your Talking Reflection", layout="wide")
 
-# Custom CSS
 st.markdown("""
 <style>
     .stApp { background: linear-gradient(135deg, #0f0c29, #302b63, #24243e); }
@@ -23,7 +21,6 @@ st.markdown("""
 st.title("🪞 Mirror AI – Your Talking Reflection")
 st.markdown("Look into the camera, type your question, and your reflection will answer with voice.")
 
-# Sidebar for API key and settings
 with st.sidebar:
     st.image("https://flagcdn.com/w320/ht.png", width=80)
     st.markdown("### GlobalInternet.py")
@@ -32,18 +29,16 @@ with st.sidebar:
     st.markdown("📧 deslandes78@gmail.com")
     st.markdown("---")
     
-    # LLM provider selection
     llm_provider = st.selectbox("Choose LLM Provider", ["OpenAI", "Groq", "Gemini"])
-    
     api_key = ""
     if llm_provider == "OpenAI":
-        api_key = st.text_input("OpenAI API Key", type="password", help="Get from platform.openai.com/api-keys")
+        api_key = st.text_input("OpenAI API Key", type="password")
         model = st.selectbox("Model", ["gpt-3.5-turbo", "gpt-4o-mini"])
     elif llm_provider == "Groq":
-        api_key = st.text_input("Groq API Key", type="password", help="Get from console.groq.com")
+        api_key = st.text_input("Groq API Key", type="password")
         model = st.selectbox("Model", ["llama3-70b-8192", "mixtral-8x7b-32768"])
-    else:  # Gemini
-        api_key = st.text_input("Gemini API Key", type="password", help="Get from makersuite.google.com/app/apikey")
+    else:
+        api_key = st.text_input("Gemini API Key", type="password")
         model = "gemini-1.5-flash"
     
     st.markdown("---")
@@ -52,18 +47,14 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("© 2025 GlobalInternet.py")
 
-# Initialize session state
 if "mirror_response" not in st.session_state:
     st.session_state.mirror_response = ""
 
-# Webcam feed
 st.markdown("### 🎥 Your Reflection")
 frame_placeholder = st.empty()
 camera_running = st.checkbox("Start Camera", value=True)
 
-# Audio output function (using edge-tts subprocess – reliable)
 def speak(text):
-    """Convert text to speech and play it."""
     if not text.strip():
         return
     with tempfile.NamedTemporaryFile(delete=False, suffix=".mp3") as tmp:
@@ -80,7 +71,6 @@ def speak(text):
             if os.path.exists(tmp.name):
                 os.unlink(tmp.name)
 
-# LLM answer generation
 def get_llm_answer(question, provider, key, model_name):
     if not key:
         st.error(f"Please enter your {provider} API key.")
@@ -122,7 +112,6 @@ def get_llm_answer(question, provider, key, model_name):
         st.error(f"LLM error: {e}")
         return None
 
-# Camera feed
 if camera_running:
     cap = cv2.VideoCapture(0)
     if not cap.isOpened():
@@ -131,7 +120,6 @@ if camera_running:
         while camera_running:
             ret, frame = cap.read()
             if ret:
-                # Flip horizontally for mirror effect
                 frame = cv2.flip(frame, 1)
                 frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 frame_placeholder.image(frame_rgb, channels="RGB", use_container_width=True)
@@ -139,11 +127,9 @@ if camera_running:
                 break
         cap.release()
 
-# Question input (text only)
 st.markdown("---")
 st.markdown("### 💬 Ask the Mirror")
-
-text_question = st.text_input("Type your question here:", placeholder="e.g., What is the meaning of life?")
+text_question = st.text_input("Type your question here:")
 if st.button("Ask the Mirror", use_container_width=True) and text_question:
     with st.spinner("Mirror is thinking..."):
         answer = get_llm_answer(text_question, llm_provider, api_key, model)
@@ -157,4 +143,4 @@ if st.session_state.mirror_response:
     st.markdown(f"**Last mirror response:** {st.session_state.mirror_response}")
 
 st.markdown("---")
-st.caption("🪞 Look at yourself, type a question, and your reflection will answer with voice. Powered by AI and edge-tts.")
+st.caption("🪞 Look at yourself, type a question, and your reflection will answer with voice.")
