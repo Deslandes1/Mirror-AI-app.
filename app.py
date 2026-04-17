@@ -9,14 +9,14 @@ import subprocess
 
 st.set_page_config(page_title="Mirror AI – Your Talking Reflection", layout="wide")
 
-# Custom CSS – force all text to white
+# Custom CSS – white for most text, black for dropdown options and password input
 st.markdown("""
 <style>
     .stApp {
         background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
         color: white !important;
     }
-    /* All text elements */
+    /* All text elements default white */
     .stApp, .stApp p, .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6,
     .stApp label, .stApp .stMarkdown, .stApp .stText, .stApp .stCaption, .stApp .stInfo,
     .stApp .stSuccess, .stApp .stWarning, .stApp .stError, .stApp .stRadio label,
@@ -28,10 +28,41 @@ st.markdown("""
     .element-container, .stText p, .stText div, .stText span, .stText code {
         color: white !important;
     }
-    /* Input fields – keep text white but background semi-transparent */
-    .stTextInput input, .stTextArea textarea, .stSelectbox div[data-baseweb="select"] {
+    /* Dropdown menu options – make text black for readability */
+    div[data-baseweb="popover"] ul {
+        background-color: #f0f2f6 !important;
+        border: 1px solid #cccccc;
+    }
+    div[data-baseweb="popover"] li {
+        color: black !important;
+        background-color: #f0f2f6 !important;
+    }
+    div[data-baseweb="popover"] li:hover {
+        background-color: #d0d4dc !important;
+    }
+    /* Password input text – black for visibility */
+    .stTextInput input[type="password"] {
+        color: black !important;
+        background-color: #ffffff !important;
+    }
+    /* Regular text input – keep white background with black text? Only password fields */
+    .stTextInput input {
         color: white !important;
         background-color: rgba(255,255,255,0.1) !important;
+    }
+    /* Override for password inputs specifically */
+    input[type="password"] {
+        color: black !important;
+        background-color: #ffffff !important;
+    }
+    /* Selectbox main box – keep white text */
+    .stSelectbox div[data-baseweb="select"] {
+        background-color: #2d1b4e;
+        border: 1px solid #ffcc00;
+        border-radius: 10px;
+    }
+    .stSelectbox div[data-baseweb="select"] div {
+        color: white !important;
     }
     /* Buttons */
     .stButton button {
