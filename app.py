@@ -1,6 +1,4 @@
 import streamlit as st
-import cv2
-import numpy as np
 import asyncio
 import tempfile
 import base64
@@ -9,14 +7,18 @@ import subprocess
 
 st.set_page_config(page_title="Mirror AI – Your Talking Reflection", layout="wide")
 
-# Custom CSS – white for most text, black for dropdown options and password input
+# Custom CSS – mirror effect (flip horizontally) + all text white
 st.markdown("""
 <style>
     .stApp {
         background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
         color: white !important;
     }
-    /* All text elements default white */
+    /* Mirror effect: flip the camera image horizontally */
+    .stCameraInput video {
+        transform: scaleX(-1);
+    }
+    /* All text white */
     .stApp, .stApp p, .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6,
     .stApp label, .stApp .stMarkdown, .stApp .stText, .stApp .stCaption, .stApp .stInfo,
     .stApp .stSuccess, .stApp .stWarning, .stApp .stError, .stApp .stRadio label,
@@ -28,7 +30,7 @@ st.markdown("""
     .element-container, .stText p, .stText div, .stText span, .stText code {
         color: white !important;
     }
-    /* Dropdown menu options – make text black for readability */
+    /* Dropdown options black */
     div[data-baseweb="popover"] ul {
         background-color: #f0f2f6 !important;
         border: 1px solid #cccccc;
@@ -40,22 +42,11 @@ st.markdown("""
     div[data-baseweb="popover"] li:hover {
         background-color: #d0d4dc !important;
     }
-    /* Password input text – black for visibility */
-    .stTextInput input[type="password"] {
-        color: black !important;
-        background-color: #ffffff !important;
-    }
-    /* Regular text input – keep white background with black text? Only password fields */
-    .stTextInput input {
-        color: white !important;
-        background-color: rgba(255,255,255,0.1) !important;
-    }
-    /* Override for password inputs specifically */
+    /* Password input black text */
     input[type="password"] {
         color: black !important;
         background-color: #ffffff !important;
     }
-    /* Selectbox main box – keep white text */
     .stSelectbox div[data-baseweb="select"] {
         background-color: #2d1b4e;
         border: 1px solid #ffcc00;
@@ -64,7 +55,6 @@ st.markdown("""
     .stSelectbox div[data-baseweb="select"] div {
         color: white !important;
     }
-    /* Buttons */
     .stButton button {
         background-color: #ff6b35 !important;
         color: white !important;
@@ -75,7 +65,6 @@ st.markdown("""
         background-color: #feca57 !important;
         color: black !important;
     }
-    /* Sidebar */
     section[data-testid="stSidebar"] {
         background: linear-gradient(135deg, #1a0b2e, #2d1b4e);
     }
@@ -84,7 +73,6 @@ st.markdown("""
     section[data-testid="stSidebar"] label {
         color: white !important;
     }
-    /* Error/Warning/Success boxes */
     .stAlert {
         background-color: rgba(0,0,0,0.6) !important;
         color: white !important;
@@ -124,10 +112,13 @@ with st.sidebar:
 if "mirror_response" not in st.session_state:
     st.session_state.mirror_response = ""
 
+# Mirror camera – using st.camera_input (works in cloud)
 st.markdown("### 🎥 Your Reflection")
-frame_placeholder = st.empty()
-camera_running = st.checkbox("Start Camera", value=True)
+camera_photo = st.camera_input("", label_visibility="collapsed")
+# The camera input automatically shows the live feed; no need to capture a photo.
+# We just display the mirrored feed via CSS.
 
+# Audio function (unchanged)
 def speak(text):
     if not text.strip():
         return
@@ -185,21 +176,6 @@ def get_llm_answer(question, provider, key, model_name):
     except Exception as e:
         st.error(f"LLM error: {e}")
         return None
-
-if camera_running:
-    cap = cv2.VideoCapture(0)
-    if not cap.isOpened():
-        st.error("Cannot access camera. Please check permissions.")
-    else:
-        while camera_running:
-            ret, frame = cap.read()
-            if ret:
-                frame = cv2.flip(frame, 1)
-                frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                frame_placeholder.image(frame_rgb, channels="RGB", use_container_width=True)
-            else:
-                break
-        cap.release()
 
 st.markdown("---")
 st.markdown("### 💬 Ask the Mirror")
