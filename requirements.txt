@@ -1,0 +1,10 @@
+streamlit
+opencv-python-headless
+pillow
+speechrecognition
+pyaudio
+edge-tts
+nest-asyncio
+openai
+groq
+google-generativeai
