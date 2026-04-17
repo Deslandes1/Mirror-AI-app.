@@ -7,7 +7,7 @@ import subprocess
 
 st.set_page_config(page_title="Mirror AI – Your Talking Reflection", layout="wide")
 
-# Custom CSS – mirror effect (flip horizontally) + all text white
+# Custom CSS – mirror effect + all text white, dropdown options and selected values black
 st.markdown("""
 <style>
     .stApp {
@@ -18,7 +18,7 @@ st.markdown("""
     .stCameraInput video {
         transform: scaleX(-1);
     }
-    /* All text white */
+    /* All text white by default */
     .stApp, .stApp p, .stApp h1, .stApp h2, .stApp h3, .stApp h4, .stApp h5, .stApp h6,
     .stApp label, .stApp .stMarkdown, .stApp .stText, .stApp .stCaption, .stApp .stInfo,
     .stApp .stSuccess, .stApp .stWarning, .stApp .stError, .stApp .stRadio label,
@@ -30,7 +30,7 @@ st.markdown("""
     .element-container, .stText p, .stText div, .stText span, .stText code {
         color: white !important;
     }
-    /* Dropdown options black */
+    /* Make dropdown options (and the selected value inside the selectbox) black */
     div[data-baseweb="popover"] ul {
         background-color: #f0f2f6 !important;
         border: 1px solid #cccccc;
@@ -42,19 +42,27 @@ st.markdown("""
     div[data-baseweb="popover"] li:hover {
         background-color: #d0d4dc !important;
     }
-    /* Password input black text */
+    /* The selected value inside the selectbox (closed state) */
+    .stSelectbox div[data-baseweb="select"] div[role="button"] span {
+        color: black !important;
+    }
+    /* Password input black text on white background */
     input[type="password"] {
         color: black !important;
         background-color: #ffffff !important;
     }
+    /* Regular text inputs – keep white text */
+    .stTextInput input:not([type="password"]) {
+        color: white !important;
+        background-color: rgba(255,255,255,0.1) !important;
+    }
+    /* Selectbox main container – keep border and background */
     .stSelectbox div[data-baseweb="select"] {
-        background-color: #2d1b4e;
+        background-color: #f0f2f6 !important;
         border: 1px solid #ffcc00;
         border-radius: 10px;
     }
-    .stSelectbox div[data-baseweb="select"] div {
-        color: white !important;
-    }
+    /* Buttons */
     .stButton button {
         background-color: #ff6b35 !important;
         color: white !important;
@@ -65,6 +73,7 @@ st.markdown("""
         background-color: #feca57 !important;
         color: black !important;
     }
+    /* Sidebar */
     section[data-testid="stSidebar"] {
         background: linear-gradient(135deg, #1a0b2e, #2d1b4e);
     }
@@ -73,6 +82,7 @@ st.markdown("""
     section[data-testid="stSidebar"] label {
         color: white !important;
     }
+    /* Error/Warning/Success boxes */
     .stAlert {
         background-color: rgba(0,0,0,0.6) !important;
         color: white !important;
@@ -120,7 +130,6 @@ if show_camera:
 else:
     st.info("Camera is off. Check 'Show Camera' to see your reflection.")
 
-# Audio function (unchanged)
 def speak(text):
     if not text.strip():
         return
